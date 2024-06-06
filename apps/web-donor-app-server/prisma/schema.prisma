@@ -1,0 +1,68 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Donor {
+  age          Int?
+  available    Boolean?
+  bloodGroup   BloodGroup? @relation(fields: [bloodGroupId], references: [id])
+  bloodGroupId String?
+  createdAt    DateTime    @default(now())
+  id           String      @id @default(cuid())
+  location     Location?   @relation(fields: [locationId], references: [id])
+  locationId   String?
+  updatedAt    DateTime    @updatedAt
+  user         User?       @relation(fields: [userId], references: [id])
+  userId       String?
+  weight       Int?
+}
+
+model BloodGroup {
+  bloodBanks BloodBank[]
+  createdAt  DateTime    @default(now())
+  donors     Donor[]
+  id         String      @id @default(cuid())
+  typeField  String?
+  updatedAt  DateTime    @updatedAt
+}
+
+model BloodBank {
+  availability Int?
+  bloodGroup   BloodGroup? @relation(fields: [bloodGroupId], references: [id])
+  bloodGroupId String?
+  createdAt    DateTime    @default(now())
+  id           String      @id @default(cuid())
+  location     Location?   @relation(fields: [locationId], references: [id])
+  locationId   String?
+  name         String?
+  updatedAt    DateTime    @updatedAt
+}
+
+model Location {
+  bloodBanks BloodBank[]
+  city       String?
+  country    String?
+  createdAt  DateTime    @default(now())
+  donors     Donor[]
+  id         String      @id @default(cuid())
+  state      String?
+  updatedAt  DateTime    @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  donors    Donor[]
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
